@@ -1,0 +1,66 @@
+name: Unit tests for msdft package
+
+on: [push]
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11.5"]
+
+    steps:
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Checkout dependencies
+        uses: actions/checkout@v4
+        with:
+          path: becke
+          repository: humeniuka/becke_multicenter_integration
+      - name: Install dependencies
+        working-directory: ./becke
+        run: |
+          python -m pip install --upgrade pip
+          pip install .
+
+      - name: Checkout package
+        uses: actions/checkout@v4
+      - name: Install package
+        run: |
+          pip install -e .
+
+      - name: Test MultistateMatrixDensity class
+        working-directory: tests
+        run: |
+          python test_MultistateMatrixDensity.py
+      - name: Test KineticOperatorFunctional class
+        working-directory: tests
+        run: |
+          python test_KineticOperatorFunctional.py
+      - name: Test NuclearPotentialOperator class
+        working-directory: tests
+        run: |
+          python test_NuclearPotentialOperator.py
+      - name: Test HartreeLikeOperatorFunctional class
+        working-directory: tests
+        run: |
+          python test_ElectronRepulsionOperators.py
+      - name: Test LinearAlgebra module
+        working-directory: tests
+        run: |
+          python test_LinearAlgebra.py
+      - name: Test SelfInteractionCorrection module
+        working-directory: tests
+        run: |
+          python test_SelfInteractionCorrection.py
+      - name: Test LowerBoundKinetic module
+        working-directory: tests
+        run: |
+          python test_LowerBoundKinetic.py
+      - name: Test LowerBoundElectronRepulsion module
+        working-directory: tests
+        run: |
+          python test_LowerBoundElectronRepulsion.py
